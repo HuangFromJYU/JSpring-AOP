@@ -9,7 +9,7 @@ import edu.jyu.aop.MethodBeforeAdvice;
  * 
  * @author Jason
  */
-public class MyBeforeAdvice implements MethodBeforeAdvice {
+public class MyBeforeAdvice extends MethodBeforeAdvice {
 
 	@Override
 	public void before(Method method, Object[] args, Object target) {

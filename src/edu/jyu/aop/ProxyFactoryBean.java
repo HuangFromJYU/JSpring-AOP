@@ -4,6 +4,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+
 /**
  * 用于生产代理对象的类
  * 
@@ -13,7 +16,7 @@ public class ProxyFactoryBean {
 	// 目标对象
 	private Object target;
 	// 通知
-	private Object interceptor;
+	private MethodInterceptor interceptor;
 	// 代理实现的接口
 	private String proxyInterface;
 
@@ -23,7 +26,7 @@ public class ProxyFactoryBean {
 		this.target = target;
 	}
 
-	public void setInterceptor(Object interceptor) {
+	public void setInterceptor(MethodInterceptor interceptor) {
 		this.interceptor = interceptor;
 	}
 
@@ -62,17 +65,7 @@ public class ProxyFactoryBean {
 				new InvocationHandler() {
 					@Override
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-						Object result = null;
-
-						// 要先判断interceptor是哪种通知类型，以决定执行目标方法的位置
-						// 判断interceptor是否为前置通知类型
-						if (interceptor instanceof MethodBeforeAdvice) {
-							MethodBeforeAdvice advice = (MethodBeforeAdvice) interceptor;
-							// 在目标方法执行前执行前置通知代码
-							advice.before(method, args, target);
-							// 执行目标方法
-							result = method.invoke(target, args);
-						}
+						Object result = interceptor.intercept(target, method, args, null);
 						return result;
 					}
 				});
@@ -85,7 +78,12 @@ public class ProxyFactoryBean {
 	 * @return
 	 */
 	private Object createCGLibProxy() {
-		return null;
+		Enhancer enhancer = new Enhancer();
+		// 设置代理对象父类
+		enhancer.setSuperclass(target.getClass());
+		// 设置增强
+		enhancer.setCallback(interceptor);
+		return enhancer.create();// 创建代理对象
 	}
 
 }

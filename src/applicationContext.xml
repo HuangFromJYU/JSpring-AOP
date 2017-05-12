@@ -6,6 +6,9 @@
 	<!-- 前置通知 -->
 	<bean name="beforeAdvice" class="edu.jyu.advice.MyBeforeAdvice"></bean>
 
+	<!-- 后置通知 -->
+	<bean name="afterAdvice" class="edu.jyu.advice.MyAfterReturningAdvice"></bean>
+
 	<!-- 配置生成代理对象 -->
 	<bean name="userDaoProxy" class="edu.jyu.aop.ProxyFactoryBean">
 
@@ -13,7 +16,7 @@
 		<property name="target" ref="userDao" />
 
 		<!-- 代理要实现的接口 -->
-		<property name="proxyInterface" value="edu.jyu.dao.UserDao" />
+		<!-- <property name="proxyInterface" value="edu.jyu.dao.UserDao" /> -->
 
 		<!-- 需要织入目标的通知 -->
 		<property name="interceptor" ref="beforeAdvice" />
