@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import edu.jyu.aop.ProxyFactoryBean;
 import edu.jyu.config.Bean;
 import edu.jyu.config.Property;
 import edu.jyu.config.parsing.ConfigurationManager;
@@ -68,19 +69,21 @@ public class ClassPathXmlApplicationContext implements BeanFactory {
 					Object ref = context.get(prop.getRef());
 					// 如果依赖对象还未被加载则递归创建依赖的对象
 					if (ref == null) {
-						//下面这句的错误在于传入了当前bean配置信息，这会导致不断递归最终发生StackOverflowError
-						//解决办法是传入依赖对象的bean配置信息
-						//ref = createBeanByConfig(bean);
 						ref = createBeanByConfig(config.get(prop.getRef()));
-						
-						//TODO 还有一个大Bug，就是互相注入的问题，也会循环调用
-						//解决思路是先创建对象，然后将对象放入context中，然后再设置该对象的属性
 					}
 					params.put(prop.getName(), ref);
 					// 将ref对象注入bean对象中
 					BeanUtils.populate(beanObj, params);
 				}
 			}
+			
+			// 说明是要创建代理对象
+			if (clazz.equals(ProxyFactoryBean.class)) {
+				ProxyFactoryBean factoryBean = (ProxyFactoryBean) beanObj;
+				// 创建代理对象
+				beanObj = factoryBean.createProxy();
+			}
+			
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			throw new RuntimeException("创建" + bean.getClassName() + "对象失败");
