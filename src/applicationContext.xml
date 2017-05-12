@@ -1,3 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
+	<!-- 目标对象 -->
+	<bean name="userDao" class="edu.jyu.dao.UserDaoImpl"></bean>
+
+	<!-- 前置通知 -->
+	<bean name="beforeAdvice" class="edu.jyu.advice.MyBeforeAdvice"></bean>
+
+	<!-- 配置生成代理对象 -->
+	<bean name="userDaoProxy" class="edu.jyu.aop.ProxyFactoryBean">
+
+		<!-- 代理的目标对象 -->
+		<property name="target" ref="userDao" />
+
+		<!-- 代理要实现的接口 -->
+		<property name="proxyInterface" value="edu.jyu.dao.UserDao" />
+
+		<!-- 需要织入目标的通知 -->
+		<property name="interceptor" ref="beforeAdvice" />
+	</bean>
 </beans>
