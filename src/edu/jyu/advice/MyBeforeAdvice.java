@@ -6,7 +6,8 @@ import edu.jyu.aop.MethodBeforeAdvice;
 
 /**
  * 自定义前置通知类
-* @author Jason
+ * 
+ * @author Jason
  */
 public class MyBeforeAdvice implements MethodBeforeAdvice {
 
